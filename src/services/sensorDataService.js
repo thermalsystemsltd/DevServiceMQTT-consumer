@@ -10,10 +10,11 @@ async function insertSensorData(customerPool, data) {
       .input('battery', sql.Float, data.Voltage ? parseFloat(data.Voltage) : null)
       .input('RSSI', sql.Int, data.RSSI ? parseInt(data.RSSI) : null)
       .input('SNR', sql.Float, data.SNR ? parseFloat(data.SNR) : null)
+      .input('humidity', sql.Float, data.humidity ? parseFloat(data.humidity) : null)
       .query(`
         INSERT INTO [${customerPool.config.database}].dbo.sensor_data 
-        (sensor_id, temperature, log_datetime, battery, RSSI, SNR)
-        VALUES (@sensor_id, @temperature, @timestamp, @battery, @RSSI, @SNR)
+        (sensor_id, temperature, log_datetime, battery, RSSI, SNR, hum)
+        VALUES (@sensor_id, @temperature, @timestamp, @battery, @RSSI, @SNR, @humidity)
       `);
     
     logger.info(`Inserted data for sensor ${data.serialNumber}`);

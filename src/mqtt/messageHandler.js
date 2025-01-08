@@ -30,6 +30,11 @@ async function handleMessage(topic, message, customerPool) {
       return;
     }
 
+    if (data.humidity && !validation.isValidHumidity(data.humidity)) {
+      logger.warn(`Invalid humidity format: ${data.humidity}`);
+      return;
+    }
+
     // Validate sensor exists and is active
     const isValid = await isValidSensor(customerPool, data.serialNumber);
     if (!isValid) {

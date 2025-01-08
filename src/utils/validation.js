@@ -22,11 +22,16 @@ function isValidSNR(snr) {
   return snr && /^\d+\.\d+$/.test(snr);
 }
 
+function isValidHumidity(humidity) {
+  return humidity && /^\d+\.\d+$/.test(humidity);
+}
+
 module.exports = {
   isValidTemperature,
   isValidTimestamp,
   isValidSerialNumber,
   isValidVoltage,
   isValidRSSI,
-  isValidSNR
+  isValidSNR,
+  isValidHumidity
 };
