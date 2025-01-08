@@ -1,10 +1,31 @@
 require('dotenv').config();
+const path = require('path');
+const fs = require('fs');
+const logger = require('./utils/logger');
+
+// Check if .env file exists and was loaded
+const envPath = path.join(process.cwd(), '.env');
+if (!fs.existsSync(envPath)) {
+  logger.error(`.env file not found at ${envPath}`);
+  process.exit(1);
+}
+
+// Verify essential environment variables
+const requiredEnvVars = ['SERVER', 'DATABASE', 'USER', 'PASSWORD', 'MQTTBROKER'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  logger.error(`Missing required environment variables: ${missingVars.join(', ')}`);
+  process.exit(1);
+}
+
+logger.info('Environment variables loaded successfully');
+
 const { getCompanies } = require('./services/companyService');
 const { getCustomerPool } = require('./config/database');
 const { getActiveBaseUnits } = require('./services/baseUnitService');
 const MqttClient = require('./mqtt/client');
 const pollingService = require('./services/pollingService');
-const logger = require('./utils/logger');
 
 const clients = new Map();
 
