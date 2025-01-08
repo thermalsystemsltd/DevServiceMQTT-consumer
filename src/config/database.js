@@ -3,15 +3,16 @@ const logger = require('../utils/logger');
 const retry = require('../utils/retry');
 
 const mainConfig = {
-  server: process.env.SERVER || '81.133.236.250,32795\\DEVSERVER',
-  database: process.env.DATABASE || 'db1',
-  user: process.env.USER || 'MONITOR',
-  password: process.env.PASSWORD || 'Thermal13',
+  server: process.env.SERVER,
+  database: process.env.DATABASE,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
   driver: 'msnodesqlv8',
   options: {
     encrypt: false,
     trustServerCertificate: true,
-    trustedConnection: false
+    trustedConnection: false,
+    enableArithAbort: true
   },
   connectionTimeout: 30000,
   requestTimeout: 30000,
@@ -30,6 +31,12 @@ const poolTimeouts = new Map();
 async function getMainPool() {
   if (!pools.has('main')) {
     try {
+      logger.info('Attempting database connection with config:', {
+        server: mainConfig.server,
+        database: mainConfig.database,
+        user: mainConfig.user
+      });
+
       const pool = await retry.withRetries(
         async () => {
           const newPool = new sql.ConnectionPool(mainConfig);
@@ -40,8 +47,10 @@ async function getMainPool() {
         'main database'
       );
       
+      await pool.request().query('SELECT @@VERSION as version');
+      
       pools.set('main', pool);
-      logger.info('Connected to main database');
+      logger.info('Successfully connected to main database');
       
       // Setup periodic connection check
       setInterval(async () => {
@@ -56,7 +65,14 @@ async function getMainPool() {
       
       return pool;
     } catch (err) {
-      logger.error('Error connecting to main database:', err);
+      logger.error('Error connecting to main database:', {
+        error: err.message,
+        code: err.code,
+        state: err.state,
+        server: mainConfig.server,
+        database: mainConfig.database,
+        user: mainConfig.user
+      });
       throw err;
     }
   }
