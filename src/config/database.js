@@ -3,10 +3,10 @@ const logger = require('../utils/logger');
 const retry = require('../utils/retry');
 
 const mainConfig = {
-  server: process.env.SERVER,
-  database: process.env.DATABASE,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
+  server: process.env.DB_SERVER || process.env.SERVER,
+  database: process.env.DB_NAME || process.env.DATABASE,
+  user: process.env.DB_USER || process.env.USER,
+  password: process.env.DB_PASSWORD || process.env.PASSWORD,
   driver: 'msnodesqlv8',
   options: {
     encrypt: false,

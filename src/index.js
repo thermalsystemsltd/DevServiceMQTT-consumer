@@ -11,8 +11,21 @@ if (!fs.existsSync(envPath)) {
 }
 
 // Verify essential environment variables
-const requiredEnvVars = ['SERVER', 'DATABASE', 'USER', 'PASSWORD', 'MQTTBROKER'];
-const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+const requiredEnvVars = [
+  ['DB_SERVER', 'SERVER'],
+  ['DB_NAME', 'DATABASE'],
+  ['DB_USER', 'USER'],
+  ['DB_PASSWORD', 'PASSWORD'],
+  ['MQTTBROKER']
+];
+
+const missingVars = requiredEnvVars.filter(varName => {
+  if (Array.isArray(varName)) {
+    // Check if at least one of the alternatives exists
+    return !varName.some(v => process.env[v]);
+  }
+  return !process.env[varName];
+});
 
 if (missingVars.length > 0) {
   logger.error(`Missing required environment variables: ${missingVars.join(', ')}`);
