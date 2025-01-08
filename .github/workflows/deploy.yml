@@ -17,5 +17,10 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           debug: true
           command_timeout: "20m"
+          script_stop: true
+          proxy_timeout: "30m"
+          proxy_key_exchange_timeout: "30m"
+          proxy_ciphers: "aes128-ctr,aes192-ctr,aes256-ctr"
+          proxy_key_exchange: "curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521"
           script: |
             cmd.exe /c C:\Users\Administrator\Documents\DeployScripts\deployMQTTConsumer.bat
