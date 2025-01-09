@@ -1,5 +1,16 @@
 function isValidTemperature(temperature) {
-  return /^\d+\.\d+$/.test(temperature);
+  // First convert to string in case we receive a number
+  const tempStr = String(temperature);
+  
+  // Allow negative or positive numbers with optional decimal places
+  const isValid = /^-?\d+\.?\d*$/.test(tempStr);
+  
+  // Add debug logging
+  if (!isValid) {
+    logger.debug(`Temperature validation failed for value: ${temperature}, type: ${typeof temperature}`);
+  }
+  
+  return isValid;
 }
 
 function isValidTimestamp(timestamp) {
