@@ -3,6 +3,23 @@ const logger = require('../utils/logger');
 
 async function insertSensorData(customerPool, data) {
   try {
+    // First check if this data point already exists
+    const existingData = await customerPool.request()
+      .input('sensor_id', sql.VarChar, data.serialNumber)
+      .input('timestamp', sql.DateTime, new Date(data.timestamp))
+      .query(`
+        SELECT TOP 1 1 
+        FROM [${customerPool.config.database}].dbo.sensor_data 
+        WHERE sensor_id = @sensor_id 
+        AND log_datetime = @timestamp
+      `);
+
+    if (existingData.recordset.length > 0) {
+      logger.warn(`Duplicate data point detected for sensor ${data.serialNumber} at ${data.timestamp}`);
+      return;
+    }
+
+    // Proceed with insert if no duplicate found
     await customerPool.request()
       .input('sensor_id', sql.VarChar, data.serialNumber)
       .input('temperature', sql.Float, parseFloat(data.temperature))

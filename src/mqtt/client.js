@@ -93,7 +93,7 @@ class MqttClient {
         return;
       }
 
-      this.client.subscribe(topic, (err, granted) => {
+      this.client.subscribe(topic, { qos: 1, nl: true }, (err, granted) => {
         if (err) {
           logger.error(`Failed to subscribe to ${topic}:`, err);
           reject(err);
